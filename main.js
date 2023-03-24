@@ -1,9 +1,11 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow , ipcMain, dialog} = require('electron')
+const { app, BrowserWindow , ipcMain, dialog, Menu} = require('electron')
 const path = require('path')
 const fs = require('fs');
+const CustomMenu = require('./menus');
+
 let mainWindow;
 const createWindow = () => {
   // Create the browser window.
@@ -22,8 +24,13 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools()
 }
 
+Menu.setApplicationMenu(CustomMenu);
 
-ipcMain.handle('open-file', async (event)=>{
+const openFileMenu = CustomMenu.getMenuItemById('1');
+
+
+openFileMenu.click = async(e, focusedWindow)=>{
+
     const filePath = await dialog.showOpenDialog(mainWindow, {
         title:"Open File",
         defaultPath:"C:\\Users\\DELL Latitude 7420\\Desktop\\electron-desktop-app",
@@ -53,16 +60,23 @@ ipcMain.handle('open-file', async (event)=>{
             )}
          )
 
-         return fileData;
+        focusedWindow.webContents.send('open-file-data', fileData);
     }
     catch(err){
         throw err;
     }
+}
 
-    
-});
 
-ipcMain.handle('save-file', async(event, data)=>{
+
+const saveFileMenu = CustomMenu.getMenuItemById('2');
+
+saveFileMenu.click = async (e, focusedWindow)=>{
+    focusedWindow.webContents.send('get-save-file-data')
+}
+
+
+ipcMain.handle('file-data', async(event, data)=>{
     
     const filePath = await dialog.showSaveDialog(mainWindow, {
         title:"Save File",

@@ -1,16 +1,8 @@
 const TextArea = document.querySelector('#file-data');
 
-const openBtn = document.querySelector('#open-btn');
-const saveBtn = document.querySelector('#save-btn');
-
-
-saveBtn.addEventListener('click', async (e)=>{
-    window.mainAPI.saveFile(TextArea.value);
+window.mainAPI.onFileData((data)=>{
+    TextArea.value = data;
 })
-
-
-openBtn.addEventListener('click', async (e)=>{
-    window.mainAPI.openFile().then(data =>{
-        TextArea.value = data;
-    })
+window.mainAPI.onSaveFileData(()=>{
+    return TextArea.value;
 })
